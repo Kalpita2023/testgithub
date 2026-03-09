@@ -1,8 +1,8 @@
-name: Frontend Feature Test    
+name: Frontend Feature Test  
 on:
   push:
     branches:
-      - 'feature/*'            
+      - 'feature/*'           
   pull_request:
     branches:
       - 'feature/*'
@@ -20,7 +20,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install           ে
+        run: npm install        ে
 
       - name: Run Frontend Tests
         run: npm test              
