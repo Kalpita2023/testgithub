@@ -1,36 +1,41 @@
-name: CI-TESTING-PIPELINE 111        # Name of pipeline
+name: CI-TEST-AND-AUTO-PR
 on:
   push:
     branches:
-      - 'feature/*'               #েWill run in feature branch
-  pull_request:
-    branches:
-      - main                       #ে After pull request it will run in main branch
+      - 'feature/*'                
+permissions:                       
+  pull-requests: write
+  contents: write
 
 jobs:
-  test-application:
-    runs-on: ubuntu-latest         # virtual env
+  test-and-create-pr:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4  #েCode runner
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'       # project version
+          node-version: '20'
+
       - name: Install Dependencies
-        run: npm install           #ে Essential package
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build Project
+        run: npm run build
+
       - name: Create Pull Request
-        if: success()                
+        # 'if: success()' 
+        if: success() 
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Automated PR after successful testing"
-          title: "Deploying ${{ github.ref_name }} to Main"
-          body: "This PR was automatically created by GitHub Actions after successful frontend testing."
-          base: main                  
-          branch: main-merged-${{ github.ref_name }} চ
-      
-
-      - name: Run Unit Tests
-        run: npm test              #ে Test script
+          commit-message: "Automated PR after successful tests"
+          title: "PR: Merge ${{ github.ref_name }} into Main"
+          body: "This PR was automatically created by GitHub Actions after passing all unit tests."
+          base: main               # যেখানে কোডটি মার্জ হবে (Target Branch)
+          branch: auto-pr-${{ github.ref_name }} # পিআর এর জন্য একটি টেম্পোরারি ব্রাঞ্চ
