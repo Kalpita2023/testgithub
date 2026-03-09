@@ -1,17 +1,17 @@
-name: Frontend Feature Test
+name: Frontend Feature Test    
 on:
   push:
     branches:
-      - 'feature/*' ## run in feature branch
+      - 'feature/*'            
   pull_request:
     branches:
       - 'feature/*'
 
 jobs:
-  frontend-build:
+  frontend-testing:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -20,10 +20,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install           ে
 
-      - name: Run Tests
-        run: npm test
-
-      - name: Build
-        run: npm run build
+      - name: Run Frontend Tests
+        run: npm test              
