@@ -1,4 +1,4 @@
-name: CI-TESTING-PIPELINE          # Name of pipeline
+name: CI-TESTING-PIPELINE 1          # Name of pipeline
 on:
   push:
     branches:
