@@ -1,4 +1,4 @@
-name: Frontend Feature Test  Pipelune
+name: Frontend Feature Test  Pipeline
 on:
   push:
     branches:
