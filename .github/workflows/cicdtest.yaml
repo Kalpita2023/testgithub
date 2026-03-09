@@ -1,0 +1,26 @@
+name: CI-TESTING-PIPELINE          # Name of pipeline
+on:
+  push:
+    branches:
+      - 'feature/*'               #েWill run in feature branch
+  pull_request:
+    branches:
+      - main                       #ে After pull request it will run in main branch
+
+jobs:
+  test-application:
+    runs-on: ubuntu-latest         # virtual env
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4  #েCode runner
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'       # project version
+
+      - name: Install Dependencies
+        run: npm install           #ে Essential package
+
+      - name: Run Unit Tests
+        run: npm test              #ে Test script
