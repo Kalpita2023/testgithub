@@ -1,0 +1,26 @@
+name: Frontend Feature Test  Pipeline1
+on:
+  push:
+    branches:
+      - 'feature/*'           
+  pull_request:
+    branches:
+      - 'feature/*'
+
+jobs:
+  frontend-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install        ে
+
+      - name: Run Frontend Tests
+        run: npm test              

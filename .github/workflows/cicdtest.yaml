@@ -1,0 +1,36 @@
+name: CI-TESTING-PIPELINE          # Name of pipeline
+on:
+  push:
+    branches:
+      - 'feature/*'               #েWill run in feature branch
+  pull_request:
+    branches:
+      - main                       #ে After pull request it will run in main branch
+
+jobs:
+  test-application:
+    runs-on: ubuntu-latest         # virtual env
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4  #েCode runner
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'       # project version
+      - name: Install Dependencies
+        run: npm install           #ে Essential package
+      - name: Create Pull Request
+        if: success()                
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated PR after successful testing"
+          title: "Deploying ${{ github.ref_name }} to Main"
+          body: "This PR was automatically created by GitHub Actions after successful frontend testing."
+          base: main                  
+          branch: main-merged-${{ github.ref_name }} চ
+      
+
+      - name: Run Unit Tests
+        run: npm test              #ে Test script
