@@ -1,4 +1,4 @@
-name: Main pipeline
+name: Front end pipelien
 on: push
 jobs:
  my-job:
