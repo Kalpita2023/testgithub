@@ -2,7 +2,7 @@ name: Frontend Feature Test
 on:
   push:
     branches:
-      - 'feature/*' # run in feature branch
+      - 'feature/*' ## run in feature branch
   pull_request:
     branches:
       - 'feature/*'
