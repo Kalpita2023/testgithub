@@ -1,4 +1,4 @@
-name: Hello World
+name: Main pipeline
 on: push
 jobs:
  my-job:
