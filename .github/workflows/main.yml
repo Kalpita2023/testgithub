@@ -13,50 +13,11 @@ permissions:                # Write permission to create PR and delete
   pull-requests: write
   contents: write
 
+name: Hello World
+on: push
 jobs:
-  # 1. Testing and auto PR
-  test-and-pr:
-    if: github.event_name == 'push' # Will run only after push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Hello World Message
-        run: echo "Hello, starting the CI/CD pipeline for ${{ github.ref_name }}"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install and Test
-        run: |
-          npm install
-          npm test
-
-      - name: Create Pull Request
-        if: success()         # After testing PR will be created
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Automated PR from HelloWorld Pipeline"
-          title: "PR: Merge ${{ github.ref_name }} into Main"
-          body: "This PR was created automatically after passing tests."
-          base: main
-          branch: auto-pr-branch # Temporary branch for PR
-
-  # After merging feature brach will be deleted
-  delete-branch-after-merge:
-    if: github.event.pull_request.merged == true # Will run during merging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete merged feature branch
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: heads/${context.payload.pull_request.head.ref}
-            })
+ my-job:
+   runs-on: ubuntu-latest
+   steps:
+   - name: Print Hello World
+     run: echo "Hello World!"
