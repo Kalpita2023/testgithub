@@ -1,3 +1,18 @@
+name: HELLO-WORLD-CI-CD test12
+
+on:
+  push:
+    branches:
+      - 'feature/*'         # After pushing into feature the test and PR will run
+  pull_request:
+    types: [closed]         # Delete will run after PR close and delete
+    branches:
+      - main                # PR for main branch
+
+permissions:                # Write permission to create PR and delete
+  pull-requests: write
+  contents: write
+
 name: Hello World
 on: push
 jobs:
