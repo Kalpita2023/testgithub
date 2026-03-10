@@ -1,8 +1,26 @@
-name: Hello World
-on: push
+name: CI-CD-WITH-AUTO-PR
+
+on:
+  push:
+    branches:
+      - 'feature/*'          # ফিচার ব্রাঞ্চে পুশ করলে এটি রান হবে
+
+permissions:                 # পিআর তৈরি করার জন্য এই পারমিশনটি অত্যাবশ্যক
+  contents: write
+  pull-requests: write
+
 jobs:
- my-job:
-   runs-on: ubuntu-latest
-   steps:
-   - name: Print Hello World
-     run: echo "Hello World123!"
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated PR from feature branch"
+          title: "PR: Merge ${{ github.ref_name }} into Main"
+          body: "This PR was automatically created after a commit."
+          base: main          # যেখানে কোড মার্জ হবে
