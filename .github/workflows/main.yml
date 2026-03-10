@@ -1,4 +1,4 @@
-name: HELLO-WORLD-CI-CD
+name: HELLO-WORLD-CI-CD test
 
 on:
   push:
