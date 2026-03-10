@@ -1,26 +1,32 @@
-name: CI-CD-WITH-AUTO-PR
+name: Docker-Build-And-Auto-PR
 
 on:
   push:
     branches:
-      - 'feature/*'       #ে
+      - 'feature/*'         # আপনার ফিচার ব্রাঞ্চের নামের প্যাটার্ন ঠিক রাখুন
 
-permissions:                 
+permissions:                # এটি ছাড়া অ্যাকশন রান করলেও পিআর তৈরি হবে না
   contents: write
   pull-requests: write
 
 jobs:
-  create-pull-request:
+  build-and-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # ডকার ইমেজ তৈরির স্টেপ (আপনার রিকোয়েস্ট অনুযায়ী)
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app-image:latest .
+          echo "Docker Image Created Successfully"
+
+      # অটোমেটিক পুল রিকোয়েস্ট তৈরির স্টেপ
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Automated PR from feature branch"
+          commit-message: "Automated Docker Build and PR"
           title: "PR: Merge ${{ github.ref_name }} into Main"
-          body: "This PR was automatically created after a commit."
-          base: main          # যেখানে কোড মার্জ হবে
+          base: main
