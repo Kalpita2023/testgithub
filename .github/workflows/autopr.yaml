@@ -1,37 +1,30 @@
-name: Auto PR on Push
+name: Auto Create Pull Request
 
 on:
   push:
     branches:
-      - 'feature/**'    # Matches feature/* branches
-      # Add more branch patterns as needed
+      - 'feature/*'      # Triggers on any branch starting with feature/
+
+permissions:
+  contents: write
+  pull-requests: write   # Mandatory for the bot to create a PR
 
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Required for proper branch comparison
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: ""Auto-created PR from ${{ github.ref_name }}""
-          title: ""Auto PR: ${{ github.ref_name }}""
+          commit-message: "Automated PR from ${{ github.ref_name }}"
+          title: "PR: Merge ${{ github.ref_name }} into Main"
           body: |
-            Automated pull request created from push to ${{ github.ref_name }}
-            
-            Branch: ${{ github.ref_name }}
-            Triggered by: ${{ github.actor }}
-          branch: ${{ github.ref_name }}
-          base: main
-          labels: |
-            automated-pr
-            needs-review
+            This Pull Request was automatically created by GitHub Actions.
+            - *Branch:* ${{ github.ref_name }}
+            - *Triggered by:* ${{ github.actor }}
+          base: main      # The target branch you want to merge into
+          branch: pr-automation/${{ github.ref_name }} # Creates a unique tracking branch
