@@ -3,9 +3,9 @@ name: CI-CD-WITH-AUTO-PR
 on:
   push:
     branches:
-      - 'feature/*'          # ফিচার ব্রাঞ্চে পুশ করলে এটি রান হবে
+      - 'feature/*'       #ে
 
-permissions:                 # পিআর তৈরি করার জন্য এই পারমিশনটি অত্যাবশ্যক
+permissions:                 
   contents: write
   pull-requests: write
 
