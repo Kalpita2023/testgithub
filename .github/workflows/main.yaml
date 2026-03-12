@@ -1,32 +1,60 @@
-name: Docker-Build-And-Auto-PR1
+name: Build Docker Image and Deploy
 
 on:
   push:
     branches:
-      - 'feature/*'         # আপনার ফিচার ব্রাঞ্চের নামের প্যাটার্ন ঠিক রাখুন
+      - main
+      - 'feature/**' # ১ম ইমেজ অনুযায়ী সব ফিচার ব্রাঞ্চে ট্রিগার হবে
+  workflow_dispatch:
 
-permissions:                # এটি ছাড়া অ্যাকশন রান করলেও পিআর তৈরি হবে না
-  contents: write
-  pull-requests: write
+permissions:
+  contents: read
 
 jobs:
-  build-and-pr:
+  build-and-push-docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # ডকার ইমেজ তৈরির স্টেপ (আপনার রিকোয়েস্ট অনুযায়ী)
-      - name: Build Docker Image
-        run: |
-          docker build -t my-app-image:latest .
-          echo "Docker Image Created Successfully"
+      # Docker BuildKit সেটআপ করার জন্য এটি প্রয়োজন (Secret মাউন্ট করার জন্য)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # অটোমেটিক পুল রিকোয়েস্ট তৈরির স্টেপ
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Automated Docker Build and PR"
-          title: "PR: Merge ${{ github.ref_name }} into Main"
-          base: main
+          # ১ম ইমেজ অনুযায়ী আপনার ACR নাম
+          login-server: emnadvpulseacrih600acr.azurecr.io 
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # ২য় ইমেজ অনুযায়ী অ্যাপ বিল্ড এনভায়রনমেন্ট সেটআপ
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ২য় ইমেজ অনুযায়ী Vite অ্যাপ বিল্ড করা
+      - name: Build Vite React App
+        run: npm run build
+        env:
+          # অ্যাপ বিল্ডের সময় প্রয়োজনীয় Secrets
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+          VITE_REDIRECT_URI: ${{ secrets.VITE_REDIRECT_URI }}
+          VITE_NESTLE_LOGIN_URL: ${{ secrets.VITE_NESTLE_LOGIN_URL }}
+
+      # ১ম এবং ২য় ইমেজ মিলিয়ে Docker Build and Push ধাপ
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile # নিশ্চিত করুন আপনার Dockerfile রুট ডিরেক্টরিতে আছে
+          push: true
+          # ১ম ইমেজ অনুযায়ী ট্যাগ
+          tags: emnadvpulseacrih600acr.azurecr.io/fe-dev:${{ github.sha }}
